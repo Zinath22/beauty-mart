@@ -1,0 +1,34 @@
+[
+  {
+    "id": 1,
+    "title": "Hydrating Face Cream",
+    "img": "https://i.ibb.co.com/GvprM3gL/3.jpg",
+    "price": 800,
+    "description": "Deeply hydrates and nourishes dry skin for a smooth and glowing look.",
+    "rating": 4.5
+  },
+  {
+    "id": 2,
+    "title": "Hydrating Face Cream",
+    "img": "https://i.ibb.co.com/vxMYHV6V/image.png",
+    "price": 850,
+    "description": "Deeply hydrates and nourishes dry skin for a smooth and glowing look.",
+    "rating": 4.5
+  },
+  {
+    "id": 3,
+    "title": "Hydrating Face Cream",
+    "img": "https://i.ibb.co.com/p6Q0fchX/81a72-DDFc-KL-AC-SL1500.jpg",
+    "price": 850,
+    "description": "Deeply hydrates and nourishes dry skin for a smooth and glowing look.",
+    "rating": 4.5
+  },
+  {
+    "id": 4,
+    "title": "Hydrating Face Cream",
+    "img": "https://i.ibb.co.com/p6Q0fchX/81a72-DDFc-KL-AC-SL1500.jpg",
+    "price": 850,
+    "description": "Deeply hydrates and nourishes dry skin for a smooth and glowing look.",
+    "rating": 4.5
+  }
+]
