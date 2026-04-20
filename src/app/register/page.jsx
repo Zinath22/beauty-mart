@@ -137,7 +137,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { postUser } from "@/actions/server/auth";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 
@@ -174,9 +173,18 @@ export default function RegisterPage() {
     try {
       setLoading(true);
 
-      const res = await postUser(form);
+      // 🔥 API CALL (IMPORTANT FIX)
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
 
-      if (res?.success) {
+      const data = await res.json();
+
+      if (data.success) {
         await Swal.fire({
           icon: "success",
           title: "Registration Successful 🎉",
@@ -184,7 +192,7 @@ export default function RegisterPage() {
           confirmButtonText: "Go to Login",
         });
 
-        // clear form
+        // reset form
         setForm({
           name: "",
           email: "",
@@ -194,11 +202,7 @@ export default function RegisterPage() {
         router.push("/login");
 
       } else {
-        Swal.fire(
-          "Error",
-          res?.message || "Registration failed",
-          "error"
-        );
+        Swal.fire("Error", data.message || "Registration failed", "error");
       }
 
     } catch (error) {
@@ -219,7 +223,7 @@ export default function RegisterPage() {
             Create Account
           </h2>
 
-          <form autoComplete="off" onSubmit={handleSubmit} className="space-y-3">
+          <form  onSubmit={handleSubmit} className="space-y-3">
 
             <input
               type="text"

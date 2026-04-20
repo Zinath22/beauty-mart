@@ -64,72 +64,65 @@
 // };
 
 
-"use server";
-
-import { collections, dbConnect } from "@/lib/dbConnect";
+import { dbConnect } from "@/lib/dbConnect";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
-import { Resend } from "resend";
+import { sendVerificationEmail } from "@/lib/sendVerificationEmail";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-export const postUser = async (payload) => {
+export const postUser = async (form) => {
   try {
-    const { email, password, name } = payload;
-
-    if (!email || !password || !name) {
-      return { success: false, message: "Missing fields" };
-    }
-
     const db = await dbConnect();
-    const users = db.collection(collections.USERS);
+    const users = db.collection("users");
 
-    const exist = await users.findOne({ email });
-    if (exist) {
-      return { success: false, message: "User already exists" };
+    if (!form.name || !form.email || !form.password) {
+      return {
+        success: false,
+        message: "Name, email, and password are required",
+      };
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // 🔍 check existing user
+    const existingUser = await users.findOne({
+      email: form.email,
+    });
 
-    const verifyToken = crypto.randomBytes(32).toString("hex");
+    if (existingUser) {
+      return {
+        success: false,
+        message: "User already exists",
+      };
+    }
 
+    // 🔐 password hash
+    const hashedPassword = await bcrypt.hash(form.password, 10);
+
+    // 🔑 generate verification token
+    const token = crypto.randomBytes(32).toString("hex");
+
+    // 💾 save user in DB
     await users.insertOne({
-      name,
-      email,
+      name: form.name,
+      email: form.email,
       password: hashedPassword,
-      role: "user",
       verified: false,
-      verifyToken,
+      verifyToken: token,
       createdAt: new Date(),
     });
 
-    // 🔗 verification link
-    const verifyLink = `${process.env.NEXTAUTH_URL}/verify?token=${verifyToken}`;
+    // 📧 send verification email
+    await sendVerificationEmail(form.email, token);
 
-    // 📧 send email via Resend
-    const { error } = await resend.emails.send({
-      from: "onboarding@resend.dev",
-      to: email,
-      subject: "Verify your email",
-      html: `
-        <h2>Verify Your Account</h2>
-        <p>Click below:</p>
-        <a href="${verifyLink}">Verify Email</a>
-      `,
-    });
+    return {
+      success: true,
+      message: "Registration successful. Please verify your email.",
+    };
 
-    if (error) {
-      console.log("❌ EMAIL ERROR:", error);
-      return { success: false, message: "Email failed" };
-    }
+  } catch (error) {
+    console.log("REGISTER ERROR:", error);
 
-    console.log("✅ EMAIL SENT");
-
-    return { success: true };
-
-  } catch (err) {
-    console.log("❌ REGISTER ERROR:", err);
-    return { success: false, message: err.message };
-    
+    return {
+      success: false,
+      message: error.message,
+    };
   }
 };

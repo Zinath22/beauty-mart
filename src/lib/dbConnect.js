@@ -36,14 +36,43 @@
 //   USERS: "users",
 // };
 
+// import { MongoClient } from "mongodb";
+
+// const uri = process.env.MONGODB_URI;
+
+// let client;
+// let clientPromise;
+
+// // global cache (Next.js dev mode issue fix)
+// if (!global._mongoClientPromise) {
+//   client = new MongoClient(uri);
+//   global._mongoClientPromise = client.connect();
+// }
+
+// clientPromise = global._mongoClientPromise;
+
+// export const dbConnect = async () => {
+//   const client = await clientPromise;
+//   return client.db(process.env.DB_NAME);
+// };
+
+// export const collections = {
+//   USERS: "users",
+// };
+
 import { MongoClient } from "mongodb";
 
 const uri = process.env.MONGODB_URI;
+const dbName = process.env.DB_NAME;
 
+if (!uri) {
+  throw new Error("Please add MONGODB_URI in .env.local");
+}
+
+// ⚠️ global cache fix for Next.js hot reload
 let client;
 let clientPromise;
 
-// global cache (Next.js dev mode issue fix)
 if (!global._mongoClientPromise) {
   client = new MongoClient(uri);
   global._mongoClientPromise = client.connect();
@@ -51,11 +80,13 @@ if (!global._mongoClientPromise) {
 
 clientPromise = global._mongoClientPromise;
 
+// ✅ server-only DB connect function
 export const dbConnect = async () => {
   const client = await clientPromise;
-  return client.db(process.env.DB_NAME);
+  return client.db(dbName);
 };
 
+// optional helper
 export const collections = {
   USERS: "users",
 };
