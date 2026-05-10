@@ -1,8 +1,8 @@
 [
   {
     "id": 1,
-    "title": "Hydrating Face Cream",
-    "img": "https://i.ibb.co.com/GvprM3gL/3.jpg",
+    "title": "Face Cream",
+    "img": "https://i.ibb.co/MkgML6xK/2.png",
     "price": 800,
     "description": "Deeply hydrates and nourishes dry skin for a smooth and glowing look.",
     "rating": 4.5
@@ -10,23 +10,23 @@
   {
     "id": 2,
     "title": "Hydrating Face Cream",
-    "img": "https://i.ibb.co.com/vxMYHV6V/image.png",
+    "img": "https://i.ibb.co.com/hxYy5wyt/4.jpg",
     "price": 850,
     "description": "Deeply hydrates and nourishes dry skin for a smooth and glowing look.",
     "rating": 4.5
   },
   {
     "id": 3,
-    "title": "Hydrating Face Cream",
-    "img": "https://i.ibb.co.com/p6Q0fchX/81a72-DDFc-KL-AC-SL1500.jpg",
+    "title": "Hydrating Cream",
+    "img": "https://i.ibb.co.com/ksBRmPXL/5.jpg",
     "price": 850,
     "description": "Deeply hydrates and nourishes dry skin for a smooth and glowing look.",
     "rating": 4.5
   },
   {
     "id": 4,
-    "title": "Hydrating Face Cream",
-    "img": "https://i.ibb.co.com/p6Q0fchX/81a72-DDFc-KL-AC-SL1500.jpg",
+    "title": "MoisturizingCream",
+    "img": "https://i.ibb.co.com/Wps5s5XN/7.jpg",
     "price": 850,
     "description": "Deeply hydrates and nourishes dry skin for a smooth and glowing look.",
     "rating": 4.5

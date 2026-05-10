@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import React from 'react';
 
 const Banner = () => {
@@ -8,7 +9,14 @@ const Banner = () => {
          <div className='flex-1 space-y-5'>
             <h2 className='text-4xl font-bold'>Purchase your best makeup combo</h2>
             <p className=''>Buy Every products with discount</p>
-            <button className='btn btn-primary btn-outline'>Explore Products</button>
+            {/* <button className='btn btn-primary btn-outline'>Explore Products</button> */}
+
+            <Link href="/products">
+  <button className="btn btn-primary btn-outline">
+    Explore Products
+  </button>
+</Link>
+
          </div>
 
          <div className='flex-1'>

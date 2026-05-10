@@ -1,23 +1,28 @@
 
-"use client";
+// "use client";
 
-import { useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+// import { useEffect } from "react";
+// import { useSearchParams } from "next/navigation";
+// import Link from "next/link";
 
-export default function VerifyEmail() {
-  const params = useSearchParams();
+// export default function VerifyEmail() {
+//   const params = useSearchParams();
 
-  useEffect(() => {
-    const token = params.get("token");
+//   useEffect(() => {
+//     const token = params.get("token");
 
-    if (token) {
-      fetch("/api/verify-email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token }),
-      });
-    }
-  }, []);
+//     if (token) {
+//       fetch("/api/verify-email", {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({ token }),
+//       });
+//     }
+//   }, []);
 
-  return <h2>Verifying your email...</h2>;
-}
+//   return  <Link href="/login">
+//       <button className="btn btn-primary mt-4">
+//         Go to Login
+//       </button>
+//     </Link>;
+// }

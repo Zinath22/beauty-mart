@@ -1,6 +1,3 @@
-
-
-
 // "use client";
 
 // import { useState } from "react";
@@ -30,43 +27,53 @@
 //   const handleSubmit = async (e) => {
 //     e.preventDefault();
 
-//     const result = await signIn("credentials", {
-//       email: form.email,
-//       password: form.password,
-//       redirect: false,
-//     });
-
-//     // ❌ login fail
-//     if (result?.error) {
-//       if (result.error.includes("verify")) {
-//         Swal.fire(
-//           "Verify Required",
-//           "📧 Please verify your email before login",
-//           "warning"
-//         );
-//       } else {
-//         Swal.fire(
-//           "Error",
-//           "Email or Password not matched!",
-//           "error"
-//         );
-//       }
-//     }
-
-//     // ✅ login success
-//     else if (result?.ok) {
-//       await Swal.fire(
-//         "Success",
-//         "Login Successful",
-//         "success"
-//       );
-
-//       setForm({
-//         email: "",
-//         password: "",
+//     try {
+//       const result = await signIn("credentials", {
+//         email: form.email,
+//         password: form.password,
+//         redirect: false,
 //       });
 
-//       router.push(callback);
+//       // ❌ LOGIN FAILED
+//       if (result?.error) {
+//         const error = result.error.toLowerCase();
+
+//         if (error.includes("verify")) {
+//           Swal.fire(
+//             "Verify Required",
+//             "📧 Please verify your email before login",
+//             "warning"
+//           );
+//         } else if (error.includes("user")) {
+//           Swal.fire("Error", "User not found", "error");
+//         } else if (error.includes("password")) {
+//           Swal.fire("Error", "Wrong password", "error");
+//         } else {
+//           Swal.fire("Error", result.error, "error");
+//         }
+
+//         return;
+//       }
+
+//       // ✅ LOGIN SUCCESS
+//       if (result?.ok) {
+//         await Swal.fire(
+//           "Success",
+//           "Login Successful",
+//           "success"
+//         );
+
+//         setForm({
+//           email: "",
+//           password: "",
+//         });
+
+//         router.push(callback);
+//       }
+
+//     } catch (error) {
+//       console.log("LOGIN ERROR:", error);
+//       Swal.fire("Error", "Something went wrong", "error");
 //     }
 //   };
 
@@ -128,14 +135,15 @@
 //   );
 // }
 
-
 "use client";
 
 import { useState } from "react";
 import Link from "next/link";
-import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Swal from "sweetalert2";
+
+import { auth } from "@/lib/firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -143,68 +151,90 @@ export default function LoginPage() {
 
   const callback = params.get("callbackUrl") || "/dashboard";
 
+  const [loading, setLoading] = useState(false);
+
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
 
   const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const result = await signIn("credentials", {
-        email: form.email,
-        password: form.password,
-        redirect: false,
-      });
+      setLoading(true);
 
-      // ❌ LOGIN FAILED
-      if (result?.error) {
-        const error = result.error.toLowerCase();
+      const res = await signInWithEmailAndPassword(
+        auth,
+        form.email,
+        form.password
+      );
 
-        if (error.includes("verify")) {
-          Swal.fire(
-            "Verify Required",
-            "📧 Please verify your email before login",
-            "warning"
-          );
-        } else if (error.includes("user")) {
-          Swal.fire("Error", "User not found", "error");
-        } else if (error.includes("password")) {
-          Swal.fire("Error", "Wrong password", "error");
-        } else {
-          Swal.fire("Error", result.error, "error");
-        }
+      const user = res.user;
+
+      // ❗ Email verification check
+      if (!user.emailVerified) {
+        await Swal.fire(
+          "Verify Required",
+          "📧 Please verify your email before login",
+          "warning"
+        );
+
+        await auth.signOut(); // 🔥 IMPORTANT FIX (force logout)
 
         return;
       }
 
-      // ✅ LOGIN SUCCESS
-      if (result?.ok) {
-        await Swal.fire(
-          "Success",
-          "Login Successful",
-          "success"
-        );
+      await Swal.fire("Success", "Login Successful", "success");
 
-        setForm({
-          email: "",
-          password: "",
-        });
+      setForm({ email: "", password: "" });
 
-        router.push(callback);
-      }
+      router.push(callback);
 
     } catch (error) {
-      console.log("LOGIN ERROR:", error);
-      Swal.fire("Error", "Something went wrong", "error");
+      console.log("LOGIN ERROR:", error.code);
+
+      let message = "Something went wrong";
+
+     
+
+          
+
+if (error.code === "auth/user-not-found") {
+  message = "User not found";
+} 
+else if (
+  error.code === "auth/wrong-password" ||
+  error.code === "auth/invalid-credential"
+) {
+  message = "Invalid email or password";
+} 
+else if (error.code === "auth/invalid-email") {
+  message = "Invalid email";
+}
+
+      // if (
+      //   error.code === "auth/user-not-found" ||
+      //   error.code === "auth/invalid-credential"
+      // ) {
+      //   message = "Invalid email or password";
+      // } else if (error.code === "auth/invalid-email") {
+      //   message = "Invalid email";
+      // }
+
+      // if (error.code === "auth/user-not-found") 
+      //   { message = "User not found"; } 
+      // else if (error.code === "auth/wrong-password") 
+      //   { message = "Wrong password"; } else if (error.code === "auth/invalid-email") 
+      //     { message = "Invalid email"; }
+
+      Swal.fire("Error", message, "error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -212,7 +242,7 @@ export default function LoginPage() {
     <div className="flex justify-center items-center min-h-screen bg-base-200">
 
       <form
-        autoComplete="off"
+      autoComplete="off"
         onSubmit={handleSubmit}
         className="card p-6 w-96 shadow-xl bg-base-100"
       >
@@ -240,21 +270,22 @@ export default function LoginPage() {
           value={form.password}
           onChange={handleChange}
           autoComplete="new-password"
+          
           required
         />
 
-        <button className="btn btn-primary w-full">
-          Login
+        <button
+          className="btn btn-primary w-full"
+          disabled={loading}
+        >
+          {loading ? "Logging in..." : "Login"}
         </button>
 
         <div className="text-center mt-4">
           <p className="text-sm">Don’t have account?</p>
 
           <Link href={`/register?callbackUrl=${callback}`}>
-            <button
-              type="button"
-              className="btn btn-outline btn-sm mt-2"
-            >
+            <button type="button" className="btn btn-outline btn-sm mt-2">
               Register Now
             </button>
           </Link>

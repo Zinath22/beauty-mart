@@ -1,38 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useAuth } from "@/provider/AuthProvider";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
-export default function Dashboard() {
+export default function DashboardPage() {
+  const { user, loading } = useAuth();
   const router = useRouter();
-  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const data = localStorage.getItem("user");
+    if (loading) return;
 
-    if (!data) {
-      router.push("/login");
-    } else {
-      setUser(JSON.parse(data));
+    if (user?.role === "admin") {
+      router.push("/admin"); // 🔥 admin redirect
     }
-  }, []);
+  }, [user, loading]);
 
-  const logout = () => {
-    localStorage.removeItem("user");
-    router.push("/login");
-  };
+  if (loading) return <p>Loading...</p>;
 
-  return (
-    <div className="p-10">
-      <h1 className="text-2xl font-bold">
-        Welcome {user?.name}
-      </h1>
-
-      <p>{user?.email}</p>
-
-      <button onClick={logout} className="btn btn-error mt-4">
-        Logout
-      </button>
-    </div>
-  );
+  return <h1>User Dashboard</h1>;
 }

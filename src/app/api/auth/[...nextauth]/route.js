@@ -109,9 +109,9 @@ const handler = NextAuth({
           }
 
           // 🔥 EMAIL VERIFICATION CHECK (IMPORTANT)
-          if (!user.verified) {
-            throw new Error("Please verify your email first");
-          }
+          // if (!user.verified) {
+          //   throw new Error("Please verify your email first");
+          // }
 
           // ✅ return user
           return {
