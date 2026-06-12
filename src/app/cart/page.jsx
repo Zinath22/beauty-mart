@@ -40,11 +40,11 @@ export default function CartPage() {
         </p>
       ) : (
         <div className="space-y-4">
-          {cart.map((item, index) => (
-            <div
-              key={index}
-              className="flex gap-4 border p-4 rounded-lg shadow-sm items-center"
-            >
+          {cart.map((item) => (
+  <div
+    key={item._id}
+    className="flex gap-4 border p-4 rounded-lg shadow-sm items-center"
+  >
               {/* 🖼 IMAGE */}
               <img
                 src={item.img}

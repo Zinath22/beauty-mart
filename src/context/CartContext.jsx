@@ -1,8 +1,13 @@
-
-
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+
+import { useAuth } from "@/provider/AuthProvider";
 
 const CartContext = createContext(null);
 
@@ -11,46 +16,83 @@ export const useCart = () => {
   const context = useContext(CartContext);
 
   if (!context) {
-    throw new Error("useCart must be used inside CartProvider");
+    throw new Error(
+      "useCart must be used inside CartProvider"
+    );
   }
 
   return context;
 };
 
 export const CartProvider = ({ children }) => {
+  const { user } = useAuth();
+
   const [cart, setCart] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // 🔥 LOAD CART SAFELY (CLIENT ONLY)
+  // 🔥 UNIQUE CART KEY PER USER
+  const cartKey = user?.email
+    ? `cart_${user.email}`
+    : "cart_guest";
+
+  // 🔥 LOAD USER CART
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("cart");
-
       try {
+        const saved = localStorage.getItem(cartKey);
+
         if (saved) {
           const parsed = JSON.parse(saved);
 
           if (Array.isArray(parsed)) {
             setCart(parsed);
+          } else {
+            setCart([]);
           }
+        } else {
+          setCart([]);
         }
       } catch (err) {
         console.log("Cart parse error:", err);
-        localStorage.removeItem("cart");
+
+        localStorage.removeItem(cartKey);
+        setCart([]);
       }
 
       setIsLoaded(true);
     }
-  }, []);
+  }, [cartKey]);
 
-  // 🔥 SAVE CART ONLY AFTER LOAD COMPLETE
+  // 🔥 SAVE USER CART
   useEffect(() => {
     if (isLoaded) {
-      localStorage.setItem("cart", JSON.stringify(cart));
+      localStorage.setItem(
+        cartKey,
+        JSON.stringify(cart)
+      );
     }
-  }, [cart, isLoaded]);
+  }, [cart, cartKey, isLoaded]);
 
-  // 🔥 ADD TO CART (NO DUPLICATE)
+  // 🔥 CLEAR CART ON LOGOUT EVENT
+  useEffect(() => {
+    const handleClearCart = () => {
+      setCart([]);
+    };
+
+    window.addEventListener(
+      "clear-cart",
+      handleClearCart
+    );
+
+    return () => {
+      window.removeEventListener(
+        "clear-cart",
+        handleClearCart
+      );
+    };
+  }, []);
+
+  // 🔥 ADD TO CART
   const addToCart = (product) => {
     setCart((prev) => {
       const exists = prev.find(
@@ -73,7 +115,7 @@ export const CartProvider = ({ children }) => {
   // 🔥 CLEAR CART
   const clearCart = () => {
     setCart([]);
-    localStorage.removeItem("cart");
+    localStorage.removeItem(cartKey);
   };
 
   return (
@@ -83,7 +125,7 @@ export const CartProvider = ({ children }) => {
         addToCart,
         removeFromCart,
         clearCart,
-        isLoaded, // optional for UI loading state
+        isLoaded,
       }}
     >
       {children}

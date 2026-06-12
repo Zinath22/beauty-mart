@@ -5,7 +5,9 @@
 
 // import Navbar from "@/components/layouts/Navbar";
 // import Footer from "@/components/layouts/Footer";
+
 // import AuthProvider from "@/provider/AuthProvider";
+// import { CartProvider } from "@/context/CartContext";
 
 // const poppins = Poppins({
 //   weight: ["100", "200", "400", "500", "600", "800"],
@@ -17,19 +19,28 @@
 //     <html lang="en" className={poppins.className}>
 //       <body className="min-h-screen flex flex-col antialiased">
 
-//         <AuthProvider>
+//         {/* ✅ FIRST CART PROVIDER */}
+//         <CartProvider>
 
-//           <header className="py-2 md:w-11/12 mx-auto">
-//             <Navbar />
-//           </header>
+//           {/* ✅ THEN AUTH PROVIDER */}
+//           <AuthProvider>
 
-//           <main className="flex-1 py-2 md:w-11/12 mx-auto">
-//             {children}
-//           </main>
+//             {/* HEADER */}
+//             <header className="py-2 md:w-11/12 mx-auto">
+//               <Navbar />
+//             </header>
 
-//           <Footer />
+//             {/* MAIN */}
+//             <main className="flex-1 py-2 md:w-11/12 mx-auto">
+//               {children}
+//             </main>
 
-//         </AuthProvider>
+//             {/* FOOTER */}
+//             <Footer />
+
+//           </AuthProvider>
+
+//         </CartProvider>
 
 //       </body>
 //     </html>
@@ -53,30 +64,38 @@ const poppins = Poppins({
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={poppins.className}>
-      <body className="min-h-screen flex flex-col antialiased">
+      <body className="min-h-screen flex flex-col antialiased bg-gray-50">
 
-        {/* ✅ FIRST CART PROVIDER */}
-        <CartProvider>
+        {/* AUTH FIRST (safe user load) */}
+        <AuthProvider>
 
-          {/* ✅ THEN AUTH PROVIDER */}
-          <AuthProvider>
+          {/* CART INSIDE AUTH */}
+          <CartProvider>
 
-            {/* HEADER */}
-            <header className="py-2 md:w-11/12 mx-auto">
-              <Navbar />
+            {/* NAVBAR WRAPPER */}
+            <header className="w-full border-b bg-white shadow-sm">
+              <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2">
+                <Navbar />
+              </div>
             </header>
 
-            {/* MAIN */}
-            <main className="flex-1 py-2 md:w-11/12 mx-auto">
-              {children}
+            {/* MAIN CONTENT */}
+            <main className="flex-1 w-full">
+              <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-8">
+                {children}
+              </div>
             </main>
 
             {/* FOOTER */}
-            <Footer />
+            <footer className="w-full border-t bg-white mt-auto">
+              {/* <div className=" mx-auto px-3 sm:px-6 lg:px-8 py-6"> */}
+                <Footer />
+              {/* </div> */}
+            </footer>
 
-          </AuthProvider>
+          </CartProvider>
 
-        </CartProvider>
+        </AuthProvider>
 
       </body>
     </html>
