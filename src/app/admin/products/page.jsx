@@ -193,7 +193,7 @@ export default function AdminProductsPage() {
         </p>
 
         <p className="text-sm text-gray-500">
-          ৳ {product.price}
+          Tk {product.price}
         </p>
       </div>
 

@@ -1,6 +1,5 @@
 
 
-
 // import { getSingleProduct } from "@/actions/server/product";
 // import CartButton from "@/components/buttons/CartButton";
 // import Image from "next/image";
@@ -14,8 +13,11 @@
 //   return url;
 // };
 
+// // 🔥 META DATA FIX
 // export async function generateMetadata({ params }) {
-//   const product = await getSingleProduct(params.id);
+//   const { id } = await params;
+
+//   const product = await getSingleProduct(id);
 
 //   return {
 //     title: product?.title || "Product",
@@ -45,8 +47,11 @@
 //   };
 // }
 
+// // 🔥 PAGE FIX
 // const ProductDetails = async ({ params }) => {
-//   const product = await getSingleProduct(params.id);
+//   const { id } = await params;
+
+//   const product = await getSingleProduct(id);
 
 //   if (!product) {
 //     return (
@@ -89,7 +94,9 @@
 
 //       {/* INFO */}
 //       <div>
-//         <h1 className="text-3xl font-bold mb-3">{title}</h1>
+//         <h1 className="text-3xl font-bold mb-3">
+//           {title}
+//         </h1>
 
 //         {/* RATINGS */}
 //         <div className="flex items-center gap-2 mb-4">
@@ -97,7 +104,11 @@
 //             {Array.from({ length: 5 }, (_, i) => (
 //               <FaStar
 //                 key={i}
-//                 className={i < Math.round(ratings) ? "" : "opacity-30"}
+//                 className={
+//                   i < Math.round(ratings)
+//                     ? ""
+//                     : "opacity-30"
+//                 }
 //               />
 //             ))}
 //           </div>
@@ -110,12 +121,12 @@
 //         {/* PRICE */}
 //         <div className="mb-4">
 //           <span className="text-2xl font-bold text-primary">
-//             tk {discountedPrice || price}
+//             Tk {discountedPrice || price}
 //           </span>
 
 //           {discount > 0 && (
 //             <span className="line-through text-gray-400 ml-3">
-//               tk {price}
+//               Tk {price}
 //             </span>
 //           )}
 //         </div>
@@ -138,8 +149,12 @@
 
 // export default ProductDetails;
 
+
+
 import { getSingleProduct } from "@/actions/server/product";
 import CartButton from "@/components/buttons/CartButton";
+import AddReview from "@/components/review/AddReview";
+import ReviewList from "@/components/review/ReviewList";
 import Image from "next/image";
 import React from "react";
 import { FaStar } from "react-icons/fa";
@@ -259,12 +274,12 @@ const ProductDetails = async ({ params }) => {
         {/* PRICE */}
         <div className="mb-4">
           <span className="text-2xl font-bold text-primary">
-            tk {discountedPrice || price}
+            Tk {discountedPrice || price}
           </span>
 
           {discount > 0 && (
             <span className="line-through text-gray-400 ml-3">
-              tk {price}
+              Tk {price}
             </span>
           )}
         </div>
@@ -279,6 +294,19 @@ const ProductDetails = async ({ params }) => {
             {para}
           </p>
         ))}
+      </div>
+
+      {/* ⭐ REVIEW SECTION */}
+      <div className="col-span-full mt-10">
+
+        <AddReview
+          productId={product._id.toString()}
+        />
+
+        <ReviewList
+          productId={product._id.toString()}
+        />
+
       </div>
 
     </div>

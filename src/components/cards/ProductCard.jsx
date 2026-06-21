@@ -66,6 +66,7 @@
 
 import React from "react";
 import Link from "next/link";
+import CartButton from "@/components/buttons/CartButton";
 
 export default function ProductCard({ product }) {
   if (!product) return null;
@@ -100,32 +101,35 @@ export default function ProductCard({ product }) {
 
         <div className="flex items-center justify-between mb-4">
           <span className="text-2xl font-extrabold text-primary">
-            ৳ {product.price}
+            Tk {product.price}
           </span>
 
           <span className="bg-pink-100 text-primary px-3 py-1 rounded-full text-sm">
             ⭐ {product.rating || 4.5}
           </span>
         </div>
+        
 
-        <div className="flex gap-3">
+       <div className="flex gap-3 mt-4">
 
-          <button className="flex-1 bg-gradient-to-r from-orange-500 to-rose-500 text-white py-2 rounded-xl font-semibold">
-            Add To Cart
-          </button>
+  {/* CART */}
+  <div className="flex-1">
+    <CartButton product={product} />
+  </div>
 
-          <Link href={`/products/${product._id}`}>
-            {/* <button className="px-4 rounded-xl border border-pink-300 text-primary-600">
-              View
-            </button> */}
-            <button className="w-full px-5 py-2.5 rounded-xl border border-rose-300 text-rose-600 font-semibold text-sm sm:text-base 
-hover:bg-gradient-to-r hover:from-orange-500 hover:to-rose-500 hover:text-white 
-transition-all duration-300 shadow-sm hover:shadow-md">
-  View
-</button>
-          </Link>
+  {/* VIEW */}
+  <Link
+    href={`/products/${product._id}`}
+    className="flex-1"
+  >
+    <button className="w-full h-full px-4 py-2.5 rounded-xl border border-rose-300 text-rose-600 font-semibold text-sm sm:text-base
+    hover:bg-gradient-to-r hover:from-orange-500 hover:to-rose-500 hover:text-white
+    transition-all duration-300 shadow-sm hover:shadow-md">
+      View
+    </button>
+  </Link>
 
-        </div>
+</div>
 
       </div>
     </div>
