@@ -143,13 +143,16 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Swal from "sweetalert2";
 
 import { auth } from "@/lib/firebase";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword,  GoogleAuthProvider,
+  signInWithPopup, } from "firebase/auth";
 
 export default function LoginPage() {
   const router = useRouter();
   const params = useSearchParams();
 
   const callback = params.get("callbackUrl") || "/dashboard";
+
+  const provider = new GoogleAuthProvider();
 
   const [loading, setLoading] = useState(false);
 
@@ -238,6 +241,49 @@ else if (error.code === "auth/invalid-email") {
     }
   };
 
+  const handleGoogleLogin = async () => {
+  try {
+    setLoading(true);
+
+    const result = await signInWithPopup(auth, provider);
+
+    const user = result.user;
+
+    // Save user to database
+    await fetch("/api/user", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: user.displayName,
+        email: user.email,
+        image: user.photoURL,
+        role: "user",
+      }),
+    });
+
+    Swal.fire(
+      "Success",
+      "Google Login Successful",
+      "success"
+    );
+
+    router.push(callback);
+
+  } catch (error) {
+    console.log(error);
+
+    Swal.fire(
+      "Error",
+      error.message,
+      "error"
+    );
+  } finally {
+    setLoading(false);
+  }
+};
+
   return (
     <div className="flex justify-center items-center min-h-screen bg-base-200">
 
@@ -281,11 +327,21 @@ else if (error.code === "auth/invalid-email") {
           {loading ? "Logging in..." : "Login"}
         </button>
 
+        <div className="divider">OR</div>
+
+<button
+  type="button"
+  onClick={handleGoogleLogin}
+  className="btn btn-primary w-full"
+>
+  Continue with Google
+</button>
+
         <div className="text-center mt-4">
           <p className="text-sm">Don’t have account?</p>
 
           <Link href={`/register?callbackUrl=${callback}`}>
-            <button type="button" className="btn btn-outline btn-sm mt-2">
+            <button type="button" className="btn btn-primary btn-sm mt-2">
               Register Now
             </button>
           </Link>

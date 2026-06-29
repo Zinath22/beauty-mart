@@ -2,7 +2,7 @@
 
 
 import { initializeApp } from "firebase/app";
-import { getAuth, setPersistence, browserLocalPersistence } from "firebase/auth";
+import { getAuth, setPersistence, browserLocalPersistence, GoogleAuthProvider } from "firebase/auth";
 
 // 🔥 Firebase config
 const firebaseConfig = {
@@ -19,6 +19,9 @@ const app = initializeApp(firebaseConfig);
 
 // Auth
 export const auth = getAuth(app);
+
+// ✅ Google Provider
+export const googleProvider = new GoogleAuthProvider();
 
 // 🔥 IMPORTANT: persist login state (fix logout on refresh / weird behavior)
 if (typeof window !== "undefined") {
