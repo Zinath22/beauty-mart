@@ -9,7 +9,7 @@ export default function AdminPage() {
 
       <div className="grid gap-4 mt-5">
 
-        <Link href="/admin/products" className="btn btn-primary">
+        {/* <Link href="/admin/products" className="btn btn-primary">
           📦 Manage Products
         </Link>
 
@@ -20,6 +20,11 @@ export default function AdminPage() {
         <Link href="/admin/users" className="btn btn-accent">
           👤 Manage Users
         </Link>
+               
+  <Link href="/admin/coupons" className="btn btn-accent">
+    🏷️ Manage Coupons
+  </Link> */}
+
 
       </div>
     </div>

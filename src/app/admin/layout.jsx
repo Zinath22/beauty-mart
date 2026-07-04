@@ -32,6 +32,25 @@ export default function AdminLayout({ children }) {
               📦 Manage Products
             </Link>
           </li>
+
+          <li>
+            <Link href="/admin/carts" className="btn btn-sm w-full">
+                      🛒 Manage Carts
+                    </Link>
+          </li>
+          <li>
+            <Link href="/admin/users" className="btn btn-sm w-full">
+          👤 Manage Users
+        </Link>
+          </li>
+
+          <li>
+             <Link href="/admin/coupons" className="btn btn-sm w-full">
+    🏷️ Manage Coupons
+  </Link>
+          </li>
+
+   
         </ul>
       </div>
 

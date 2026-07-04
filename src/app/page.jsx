@@ -1,24 +1,32 @@
+
+
 // import Banner from "@/components/home/Banner";
 // import Products from "@/components/home/Products";
-// import Image from "next/image";
+// import { getProducts } from "@/actions/server/product";
 
-// export default function Home() {
+// const Home = async () => {
+//   // 🔥 LOAD PRODUCTS
+//   const products = await getProducts();
+
 //   return (
 //     <div className="space-y-20">
-     
-//      {/* <button className="btn btn-primary">Test</button> */}
-//      <section>
 
-//       <Banner></Banner>
+//       {/* BANNER */}
+//       <section>
+//         <Banner products={products} />
+//       </section>
 
-//      </section>
+//       {/* PRODUCTS */}
+//       <section>
+//         <Products products={products} />
+//       </section>
 
-//  <section>
-//              <Products></Products>
-//  </section>
 //     </div>
 //   );
-// }
+// };
+
+// export default Home;
+
 
 import Banner from "@/components/home/Banner";
 import Products from "@/components/home/Products";
@@ -28,12 +36,34 @@ const Home = async () => {
   // 🔥 LOAD PRODUCTS
   const products = await getProducts();
 
+  // 🔥 LOAD ACTIVE COUPON for banner
+  let activeCoupon = null;
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/coupons`,
+      { cache: "no-store" }
+    );
+    const data = await res.json();
+
+    if (data.success && data.coupons.length > 0) {
+      activeCoupon =
+        data.coupons.find(
+          (c) =>
+            c.isActive &&
+            new Date() < new Date(c.expiryDate) &&
+            (c.usageLimit === 0 || c.usedCount < c.usageLimit)
+        ) || null;
+    }
+  } catch (error) {
+    console.log("COUPON FETCH ERROR:", error.message);
+  }
+
   return (
     <div className="space-y-20">
 
       {/* BANNER */}
       <section>
-        <Banner products={products} />
+        <Banner products={products} activeCoupon={activeCoupon} />
       </section>
 
       {/* PRODUCTS */}
