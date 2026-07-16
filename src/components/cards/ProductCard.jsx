@@ -11,11 +11,12 @@ export default function ProductCard({ product }) {
     <div className="group rounded-3xl overflow-hidden bg-white shadow-lg hover:shadow-2xl transition-all duration-300 border border-pink-100 hover:-translate-y-2">
 
       {/* IMAGE */}
-      <div className="relative overflow-hidden">
+      <div className="relative overflow-hidden w-full">
         <img
           src={product.img || "/no-image.png"}
           alt={product.title}
-          className="w-full h-64 object-cover group-hover:scale-110 transition duration-500"
+          
+          className="w-full h-64 object-cover group-hover:scale-105 transition duration-500"
         />
 
         {/* BADGE */}

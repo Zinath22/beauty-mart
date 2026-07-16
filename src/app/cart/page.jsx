@@ -25,7 +25,7 @@
 //       if (result.isConfirmed) {
 //         removeFromCart(id);
 //         setCoupon(null);
-// localStorage.removeItem("appliedCoupon");
+//         localStorage.removeItem("appliedCoupon");
 //         Swal.fire("Deleted!", "Item removed from cart", "success");
 //       }
 //     });
@@ -38,6 +38,23 @@
 
 //   const discountAmount = coupon ? coupon.discountAmount : 0;
 //   const finalAmount    = coupon ? coupon.finalAmount    : totalPrice;
+
+//   const handleApplyCoupon = (result) => {
+//     setCoupon(result);
+
+//     // 🔥 Save coupon data to localStorage so success page can use it
+//     localStorage.setItem("appliedCoupon", JSON.stringify({
+//       code:           result.code,
+//       discountAmount: result.discountAmount,
+//       finalAmount:    result.finalAmount,
+//       originalAmount: totalPrice,
+//     }));
+//   };
+
+//   const handleRemoveCoupon = () => {
+//     setCoupon(null);
+//     localStorage.removeItem("appliedCoupon");
+//   };
 
 //   const handleCheckout = async () => {
 //     try {
@@ -62,6 +79,7 @@
 //         if (!validateData.success) {
 //           Swal.fire("Coupon Error", validateData.message, "error");
 //           setCoupon(null);
+//           localStorage.removeItem("appliedCoupon");
 //           return;
 //         }
 //       }
@@ -155,8 +173,8 @@
 //           <CouponInput
 //             orderAmount={totalPrice}
 //             userEmail="customer@test.com"
-//             onApply={(result) => setCoupon(result)}
-//             onRemove={() => setCoupon(null)}
+//             onApply={handleApplyCoupon}
+//             onRemove={handleRemoveCoupon}
 //           />
 
 //           <div className="mt-6 border rounded-lg p-4 bg-base-100 space-y-2">
@@ -191,6 +209,8 @@
 //     </div>
 //   );
 // }
+
+
 
 "use client";
 
@@ -233,8 +253,6 @@ export default function CartPage() {
 
   const handleApplyCoupon = (result) => {
     setCoupon(result);
-
-    // 🔥 Save coupon data to localStorage so success page can use it
     localStorage.setItem("appliedCoupon", JSON.stringify({
       code:           result.code,
       discountAmount: result.discountAmount,
@@ -315,46 +333,51 @@ export default function CartPage() {
   };
 
   return (
-    <div className="p-5 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-5">
+    <div className="px-4 sm:px-6 py-6 max-w-4xl mx-auto">
+      <h1 className="text-xl sm:text-2xl font-bold mb-5">
         🛒 My Cart
       </h1>
 
       {cart.length === 0 ? (
-        <p className="text-center text-gray-500">
-          No items in cart
-        </p>
+        <div className="text-center py-20">
+          <p className="text-5xl mb-4">🛒</p>
+          <p className="text-gray-500 text-lg">Your cart is empty</p>
+        </div>
       ) : (
         <>
-          <div className="space-y-4">
+          {/* CART ITEMS */}
+          <div className="space-y-3">
             {cart.map((item) => (
               <div
                 key={item._id}
-                className="flex gap-4 border p-4 rounded-lg shadow-sm items-center"
+                className="flex gap-3 sm:gap-4 border p-3 sm:p-4 rounded-xl shadow-sm items-center bg-white"
               >
+                {/* IMAGE */}
                 <img
                   src={item.img || "/no-image.png"}
                   alt={item.title}
-                  className="w-24 h-24 object-cover rounded"
+                  className="w-16 h-16 sm:w-24 sm:h-24 object-cover rounded-lg flex-shrink-0"
                 />
 
-                <div className="flex-1">
-                  <h2 className="font-semibold text-lg">
+                {/* DETAILS */}
+                <div className="flex-1 min-w-0">
+                  <h2 className="font-semibold text-sm sm:text-lg truncate">
                     {item.title}
                   </h2>
 
-                  <p className="text-gray-600">
+                  <p className="text-gray-500 text-xs sm:text-sm truncate">
                     {item.description || "No description"}
                   </p>
 
-                  <p className="text-primary font-bold mt-2">
+                  <p className="text-primary font-bold mt-1 text-sm sm:text-base">
                     TK {item.price}
                   </p>
                 </div>
 
+                {/* DELETE */}
                 <button
                   onClick={() => handleDelete(item._id)}
-                  className="btn btn-error btn-sm"
+                  className="btn btn-error btn-sm flex-shrink-0"
                 >
                   <FaTrash />
                 </button>
@@ -362,6 +385,7 @@ export default function CartPage() {
             ))}
           </div>
 
+          {/* COUPON INPUT */}
           <CouponInput
             orderAmount={totalPrice}
             userEmail="customer@test.com"
@@ -369,29 +393,31 @@ export default function CartPage() {
             onRemove={handleRemoveCoupon}
           />
 
-          <div className="mt-6 border rounded-lg p-4 bg-base-100 space-y-2">
-            <div className="flex justify-between text-lg">
-              <span>Subtotal</span>
+          {/* PRICE SUMMARY */}
+          <div className="mt-4 border rounded-xl p-4 bg-white space-y-2">
+            <div className="flex justify-between text-sm sm:text-lg">
+              <span className="text-gray-600">Subtotal</span>
               <span>TK {totalPrice}</span>
             </div>
 
             {coupon && (
-              <div className="flex justify-between text-success font-semibold">
+              <div className="flex justify-between text-success font-semibold text-sm sm:text-base">
                 <span>Discount ({coupon.code})</span>
                 <span>- TK {coupon.discountAmount}</span>
               </div>
             )}
 
-            <div className="flex justify-between text-xl font-bold border-t pt-2">
+            <div className="flex justify-between text-base sm:text-xl font-bold border-t pt-2">
               <span>Total Payable</span>
-              <span>TK {finalAmount}</span>
+              <span className="text-primary">TK {finalAmount}</span>
             </div>
           </div>
 
-          <div className="mt-6 flex justify-end">
+          {/* CHECKOUT BUTTON */}
+          <div className="mt-4 flex justify-end">
             <button
               onClick={handleCheckout}
-              className="btn btn-success btn-lg"
+              className="btn btn-success btn-md sm:btn-lg w-full sm:w-auto"
             >
               Proceed To Checkout
             </button>
@@ -401,4 +427,3 @@ export default function CartPage() {
     </div>
   );
 }
-
